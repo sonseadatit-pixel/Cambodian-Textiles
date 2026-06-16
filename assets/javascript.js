@@ -1,32 +1,34 @@
 // (Header & Footer)
-document.addEventListener("DOMContentLoaded", function () {
-    function loadComponent(elementId, filePath, callback) {
-        const targetElement = document.getElementById(elementId);
-        if (!targetElement) return;
+const basePath = location.pathname.split('/')[1];
 
-        fetch(filePath)
-            .then(response => {
-                if (!response.ok) throw new Error(`Failed to load ${filePath}`);
-                return response.text();
-            })
-            .then(data => {
-                targetElement.innerHTML = data;
-                if (callback) callback();
-            })
-            .catch(error => console.error('Error loading component:', error));
-    }
+function loadComponent(id, path, callback) {
+    const el = document.getElementById(id);
+    if (!el) return;
 
-    loadComponent('header-container', '/views/header.html', function () {
+    fetch(`/${basePath}/${path}`)
+        .then(res => {
+            if (!res.ok) throw new Error(`Failed to load ${path}`);
+            return res.text();
+        })
+        .then(html => {
+            el.innerHTML = html;
+            if (callback) callback();
+        })
+        .catch(err => console.error(err));
+}
+
+loadComponent('header-container', 'views/header.html', function () {
     if (window.bootstrap) {
         document.querySelectorAll('[data-bs-toggle="collapse"]')
             .forEach(el => new bootstrap.Collapse(el, { toggle: false }));
+
         document.querySelectorAll('[data-bs-toggle="dropdown"]')
             .forEach(el => new bootstrap.Dropdown(el));
     }
 });
 
-    loadComponent('footer-container', '/views/footer.html');
-});
+loadComponent('footer-container', 'views/footer.html');
+``
 // Use the full URL, including the protocol and .supabase.co domain
 const SUPABASE_URL = 'https://delhvakgfbqjwyyvmwka.supabase.co'; 
 const SUPABASE_ANON_KEY = 'sb_publishable_QWd-KI9pc1vjC-ZobZnrCA_fBlz-RHe';
