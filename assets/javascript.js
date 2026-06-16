@@ -1,11 +1,13 @@
-// (Header & Footer)
-const basePath = location.pathname.split('/')[1];
+// ===== Header & Footer Loader (FINAL VERSION) =====
+
+const isLocalhost = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
+const basePath = isLocalhost ? '' : '/' + location.pathname.split('/')[1];
 
 function loadComponent(id, path, callback) {
     const el = document.getElementById(id);
     if (!el) return;
 
-    fetch(`/${basePath}/${path}`)
+    fetch(`${basePath}/${path}`)
         .then(res => {
             if (!res.ok) throw new Error(`Failed to load ${path}`);
             return res.text();
@@ -14,9 +16,10 @@ function loadComponent(id, path, callback) {
             el.innerHTML = html;
             if (callback) callback();
         })
-        .catch(err => console.error(err));
+        .catch(err => console.error('Error loading component:', err));
 }
 
+// Header
 loadComponent('header-container', 'views/header.html', function () {
     if (window.bootstrap) {
         document.querySelectorAll('[data-bs-toggle="collapse"]')
@@ -27,7 +30,9 @@ loadComponent('header-container', 'views/header.html', function () {
     }
 });
 
+// Footer
 loadComponent('footer-container', 'views/footer.html');
+
 // Use the full URL, including the protocol and .supabase.co domain
 const SUPABASE_URL = 'https://delhvakgfbqjwyyvmwka.supabase.co'; 
 const SUPABASE_ANON_KEY = 'sb_publishable_QWd-KI9pc1vjC-ZobZnrCA_fBlz-RHe';
