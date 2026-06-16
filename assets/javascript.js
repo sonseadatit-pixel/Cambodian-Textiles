@@ -1,38 +1,29 @@
-// ===== Header & Footer Loader (FINAL VERSION) =====
-
 const isLocalhost = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
-const basePath = isLocalhost ? '' : '/' + location.pathname.split('/')[1];
+const repo = isLocalhost ? '' : '/' + location.pathname.split('/')[1];
 
 function loadComponent(id, path, callback) {
     const el = document.getElementById(id);
     if (!el) return;
 
-    fetch(`${basePath}/${path}`)
-        .then(res => {
-            if (!res.ok) throw new Error(`Failed to load ${path}`);
-            return res.text();
-        })
+    fetch(`${repo}/${path}`)
+        .then(res => res.text())
         .then(html => {
             el.innerHTML = html;
             if (callback) callback();
         })
-        .catch(err => console.error('Error loading component:', err));
+        .catch(err => console.error(err));
 }
 
-// Header
-loadComponent('header-container', 'views/header.html', function () {
+loadComponent('header-container', 'assets/components/header.html', () => {
     if (window.bootstrap) {
         document.querySelectorAll('[data-bs-toggle="collapse"]')
             .forEach(el => new bootstrap.Collapse(el, { toggle: false }));
-
         document.querySelectorAll('[data-bs-toggle="dropdown"]')
             .forEach(el => new bootstrap.Dropdown(el));
     }
 });
 
-// Footer
-loadComponent('footer-container', 'views/footer.html');
-
+loadComponent('footer-container', 'assets/components/footer.html');
 // Use the full URL, including the protocol and .supabase.co domain
 const SUPABASE_URL = 'https://delhvakgfbqjwyyvmwka.supabase.co'; 
 const SUPABASE_ANON_KEY = 'sb_publishable_QWd-KI9pc1vjC-ZobZnrCA_fBlz-RHe';
