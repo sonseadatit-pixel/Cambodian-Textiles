@@ -16,16 +16,16 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => console.error('Error loading component:', error));
     }
 
-     loadComponent('header-container', './header.html', function () {
-        if (window.bootstrap) {
-            document.querySelectorAll('[data-bs-toggle="collapse"]')
-                .forEach(toggler => new bootstrap.Collapse(toggler, { toggle: false }));
-            document.querySelectorAll('[data-bs-toggle="dropdown"]')
-                .forEach(dropdown => new bootstrap.Dropdown(dropdown));
-        }
-    });
+    loadComponent('header-container', '/views/header.html', function () {
+    if (window.bootstrap) {
+        document.querySelectorAll('[data-bs-toggle="collapse"]')
+            .forEach(el => new bootstrap.Collapse(el, { toggle: false }));
+        document.querySelectorAll('[data-bs-toggle="dropdown"]')
+            .forEach(el => new bootstrap.Dropdown(el));
+    }
+});
 
-    loadComponent('footer-container', './footer.html');
+    loadComponent('footer-container', '/views/footer.html');
 });
 // Use the full URL, including the protocol and .supabase.co domain
 const SUPABASE_URL = 'https://delhvakgfbqjwyyvmwka.supabase.co'; 
