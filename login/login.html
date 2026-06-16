@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../assets/Media/logo.png" type="image/x-icon">
+    <title>Admin Dashboard Login</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../admin/adminstyle.css" rel="stylesheet">
+
+</head>
+<style>
+    .password-box {
+    position: relative;
+}
+
+.password-box input {
+    width: 100%;
+    padding: 10px 40px 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background-color: #f8f9fa;
+    transition: 0.3s;
+}
+
+/* focus effect */
+.password-box input:focus {
+    outline: none;
+    border-color: #0dcaf0;   /* bootstrap info color */
+    box-shadow: 0 0 0 2px rgba(13, 202, 240, 0.2);
+    background: #fff;
+}
+
+/* eye icon */
+.password-box i {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+    transition: 0.3s;
+}
+
+.password-box i:hover {
+    color: #0dcaf0;
+}
+
+.input-box {
+    position: relative;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 10px 40px 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background-color: #f8f9fa;
+    transition: 0.3s;
+}
+
+/* focus effect */
+.input-box input:focus {
+    outline: none;
+    border-color: #0dcaf0;
+    box-shadow: 0 0 0 2px rgba(13, 202, 240, 0.2);
+    background: #fff;
+}
+
+/* icon */
+.input-box i {
+    position: absolute;
+    right: 12px;   /* icon on right side */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+
+</style>
+<body class="d-flex align-items-center justify-content-center" style="min-height: 100vh">
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            <div class="card border-0 shadow-lg rounded-4 p-4 bg-white">
+
+                <div class="text-center mb-4">
+                    <h5 class="fw-bold text-primary mt-2">Cambodian Textiles Worldwide</h5>
+                    <p class="text-muted small">Sign in to Admin Dashboard</p>
+                </div>
+
+                <form onsubmit="handleLogin(event)">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Username or Email</label>
+                        <div class="input-box">
+                            <input type="text" id="username" placeholder="Enter your email" required>
+
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Password</label>
+
+                        <div class="password-box">
+                            <input type="password" id="password" placeholder="Enter your password" required>
+
+                            <i id="passwordIcon" class="bi bi-eye" onclick="togglePassword()"></i>
+                        </div>
+                    </div>
+                    
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label small">Remember me</label>
+                        </div>
+                        <a href="forget-pw.html" class="small text-info text-decoration-none">Forgot Password?</a>
+                    </div>
+
+                    <button id="loginBtn" type="submit" class="btn btn-info text-white w-100 fw-bold py-2 rounded-3">
+                        Login
+                    </button>
+                </form>
+                <p id="errorMsg" class="text-danger small mt-2"></p>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+
+const SUPABASE_URL = 'https://delhvakgfbqjwyyvmwka.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_QWd-KI9pc1vjC-ZobZnrCA_fBlz-RHe';
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+document.addEventListener("DOMContentLoaded", () => {
+    const saved = localStorage.getItem("rememberedUsername");
+
+    if (saved) {
+        document.getElementById("username").value = saved;
+        document.getElementById("rememberMe").checked = true;
+    }
+});
+
+
+ function togglePassword() {
+    const input = document.getElementById("password");
+    const icon = document.getElementById("passwordIcon");
+
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("bi-eye");
+        icon.classList.add("bi-eye-slash");
+    } else {
+        input.type = "password";
+        icon.classList.remove("bi-eye-slash");
+        icon.classList.add("bi-eye");
+    }
+}
+
+const password = document.getElementById("password");
+
+password.addEventListener("input", () => {
+    if (password.value.length < 5) {
+        password.style.borderColor = "red";
+    } else {
+        password.style.borderColor = "green";
+    }
+});
+
+async function handleLogin(event) {
+    event.preventDefault();
+
+    const email = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+    const remember = document.getElementById("rememberMe").checked;
+
+    const btn = document.getElementById("loginBtn");
+    const errorMsg = document.getElementById("errorMsg");
+
+    errorMsg.textContent = "";
+    btn.disabled = true;
+    btn.textContent = "Logging in...";
+
+    try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
+         if (error) {
+            errorMsg.textContent = error.message;
+            btn.disabled = false;
+            btn.textContent = "Login";
+            return;
+        }
+
+         if (!data.user.email_confirmed_at) {
+            errorMsg.textContent = "Please verify your email before logging in.";
+            btn.disabled = false;
+            btn.textContent = "Login";
+            return;
+        }
+
+         if (remember) {
+            localStorage.setItem("rememberedUsername", email);
+        } else {
+            localStorage.removeItem("rememberedUsername");
+        }
+
+         if (data.session) {
+            window.location.href = "../admin/admin.html";
+        }
+
+    } catch (err) {
+        errorMsg.textContent = "Something went wrong. Please try again.";
+        console.error(err);
+
+        btn.disabled = false;
+        btn.textContent = "Login";
+    }
+}
+``
+</script>
+
+</body>
+</html>

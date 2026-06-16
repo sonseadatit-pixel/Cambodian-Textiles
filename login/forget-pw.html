@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forgot Password</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+}
+</style>
+</head>
+
+<body class="d-flex align-items-center justify-content-center">
+
+<div class="card shadow rounded-4 p-4" style="width:360px;">
+  
+  <h5 class="text-center fw-bold text-primary mb-2">
+    Cambodian Textiles Worldwide
+  </h5>
+
+  <!-- ✅ EMAIL SECTION -->
+  <div id="emailSection">
+    <p class="text-center text-muted small mb-4">
+      Enter your email to reset your password
+    </p>
+
+    <form onsubmit="sendResetEmail(event)">
+      <div class="mb-3">
+        <label class="form-label small">Email address</label>
+        <input type="email" id="resetEmail" class="form-control" required>
+      </div>
+
+      <button id="sendBtn" class="btn btn-info w-100 text-white fw-bold">
+        Send Reset Email
+      </button>
+    </form>
+
+    <p id="message" class="small mt-3 text-center"></p>
+  </div>
+
+
+  <!-- ✅ NEW PASSWORD SECTION -->
+  <div id="resetSection" style="display:none;">
+    <p class="text-center text-muted small mb-4">
+      Enter your new password
+    </p>
+
+    <form onsubmit="updatePassword(event)">
+      <div class="mb-3">
+        <label class="form-label small">New Password</label>
+        <input type="password" id="newPassword" class="form-control" required>
+      </div>
+
+      <button id="updateBtn" class="btn btn-success w-100 fw-bold">
+        Update Password
+      </button>
+    </form>
+
+    <p id="message2" class="small mt-3 text-center"></p>
+  </div>
+
+  
+<div class="text-center mt-3">
+  <a href="login.html" class="small text-decoration-none">
+    ← Back to Login
+  </a>
+</div>
+
+</div>
+
+<script src="ttps://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../admin/adminjs.js"></script>
+<script>
+const supabaseClient = supabase.createClient(
+  "https://delhvakgfbqjwyyvmwka.supabase.co",
+  "sb_publishable_QWd-KI9pc1vjC-ZobZnrCA_fBlz-RHe"
+);
+
+
+// ✅ Detect reset session (when user clicks email link)
+window.addEventListener("DOMContentLoaded", async () => {
+  const { data } = await supabaseClient.auth.getSession();
+
+  if (data.session) {
+    document.getElementById("emailSection").style.display = "none";
+    document.getElementById("resetSection").style.display = "block";
+  }
+});
+
+
+// ✅ Send Reset Email
+async function sendResetEmail(event) {
+  event.preventDefault();
+
+  const email = document.getElementById("resetEmail").value.trim();
+  const msg = document.getElementById("message");
+  const btn = document.getElementById("sendBtn");
+
+  msg.textContent = "";
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+
+  const { error } = 
+
+await supabaseClient.auth.resetPasswordForEmail(email, {
+  redirectTo: "http://localhost:5500/admin/forget-pw.html"
+});
+
+
+
+  if (error) {
+    msg.textContent = error.message;
+    msg.className = "text-danger small mt-3 text-center";
+
+    btn.disabled = false;
+    btn.textContent = "Send Reset Email";
+    return;
+  }
+
+  msg.textContent = "✅ Check your email for reset link.";
+  msg.className = "text-success small mt-3 text-center";
+
+  btn.disabled = false;
+  btn.textContent = "Send Reset Email";
+}
+
+
+// ✅ Update Password
+async function updatePassword(event) {
+  event.preventDefault();
+
+  const password = document.getElementById("newPassword").value;
+  const msg = document.getElementById("message2");
+  const btn = document.getElementById("updateBtn");
+
+  msg.textContent = "";
+  btn.disabled = true;
+  btn.textContent = "Updating...";
+
+  const { error } = await supabaseClient.auth.updateUser({
+    password: password
+  });
+
+  if (error) {
+    msg.textContent = error.message;
+    msg.className = "text-danger small mt-3 text-center";
+
+    btn.disabled = false;
+    btn.textContent = "Update Password";
+    return;
+  }
+
+  msg.textContent = "✅ Password updated successfully!";
+  msg.className = "text-success small mt-3 text-center";
+
+  btn.disabled = false;
+  btn.textContent = "Update Password";
+
+   setTimeout(() => {
+    window.location.href = "login.html";
+  }, 2000);
+}
+</script>
+
+</body>
+</html>
