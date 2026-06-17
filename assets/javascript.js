@@ -29,6 +29,7 @@ loadComponent("header-container", "assets/components/header.html", () => {
 });
 
 loadComponent("footer-container", "assets/components/footer.html");
+
 // Use the full URL, including the protocol and .supabase.co domain
 const SUPABASE_URL = 'https://delhvakgfbqjwyyvmwka.supabase.co'; 
 const SUPABASE_ANON_KEY = 'sb_publishable_QWd-KI9pc1vjC-ZobZnrCA_fBlz-RHe';
