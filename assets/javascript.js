@@ -12,6 +12,7 @@ function loadComponent(id, path, callback) {
         .then(html => {
             // ✅ FIX ALL LINKS INSIDE HEADER/FOOTER
             el.innerHTML = html.replaceAll('href="', `href="${repoBase}/`);
+            
             if (callback) callback();
         })
         .catch(err => console.error(err));
