@@ -1,35 +1,59 @@
-// ===== Header & Footer Loader (FINAL) =====
+// ===== Header & Footer Loader (FINAL & CORRECT) =====
 
-const isLocalhost = location.hostname === "127.0.0.1" || location.hostname === "localhost";
-const repoBase = isLocalhost ? "" : "/" + location.pathname.split("/")[1];
+const isLocalhost =
+  location.hostname === "127.0.0.1" ||
+  location.hostname === "localhost";
+
+const repoBase = isLocalhost
+  ? ""
+  : "/" + location.pathname.split("/")[1];
 
 function loadComponent(id, path, callback) {
-    const el = document.getElementById(id);
-    if (!el) return;
+  const el = document.getElementById(id);
+  if (!el) return;
 
-    fetch(`${repoBase}/${path}`)
-        .then(res => res.text())
-        .then(html => {
-            // ✅ FIX ALL LINKS INSIDE HEADER/FOOTER
-            el.innerHTML = html.replaceAll('href="', `href="${repoBase}/`);
-            
-            if (callback) callback();
-        })
-        .catch(err => console.error(err));
+  fetch(`${repoBase}/${path}`)
+    .then(res => res.text())
+    .then(html => {
+      // ✅ Fix links
+      html = html.replaceAll(
+        'href="',
+        `href="${repoBase}/`
+      );
+
+      // ✅ Fix images
+      html = html.replaceAll(
+        'src="assets/',
+        `src="${repoBase}/assets/`
+      );
+
+      el.innerHTML = html;
+      if (callback) callback();
+    })
+    .catch(err => console.error(err));
 }
 
 // Load components
-loadComponent("header-container", "assets/components/header.html", () => {
+loadComponent(
+  "header-container",
+  "assets/components/header.html",
+  () => {
     if (window.bootstrap) {
-        document.querySelectorAll('[data-bs-toggle="collapse"]')
-            .forEach(el => new bootstrap.Collapse(el, { toggle: false }));
+      document
+        .querySelectorAll('[data-bs-toggle="collapse"]')
+        .forEach(el => new bootstrap.Collapse(el, { toggle: false }));
 
-        document.querySelectorAll('[data-bs-toggle="dropdown"]')
-            .forEach(el => new bootstrap.Dropdown(el));
+      document
+        .querySelectorAll('[data-bs-toggle="dropdown"]')
+        .forEach(el => new bootstrap.Dropdown(el));
     }
-});
+  }
+);
 
-loadComponent("footer-container", "assets/components/footer.html");
+loadComponent(
+  "footer-container",
+  "assets/components/footer.html"
+);
 
 // Use the full URL, including the protocol and .supabase.co domain
 const SUPABASE_URL = 'https://delhvakgfbqjwyyvmwka.supabase.co'; 
